@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="land_width_column1">100dp</dimen>
+    <dimen name="land_width_column2">125dp</dimen>
+    <dimen name="land_width_column3">100dp</dimen>
+    <dimen name="land_width_column4">100dp</dimen>
+    <dimen name="land_width_column5">100dp</dimen>
+    <dimen name="port_width_column1">100dp</dimen>
+    <dimen name="port_width_column2">75dp</dimen>
+    <dimen name="port_width_column3">75dp</dimen>
+    <dimen name="port_width_column4">75dp</dimen>
+    <dimen name="port_width_column5">75dp</dimen>
+</resources>

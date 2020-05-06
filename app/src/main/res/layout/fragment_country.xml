@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/cell"
+    >
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="@dimen/port_width_column1"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+
+        android:textAppearance="?attr/textAppearanceListItem" />
+
+    <TextView
+        android:id="@+id/total_confirmed"
+        android:layout_width="@dimen/port_width_column2"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textAlignment="center"
+        />
+    <TextView
+        android:id="@+id/new_confirmed"
+        android:layout_width="@dimen/port_width_column3"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textAlignment="center"
+        />
+    <TextView
+        android:id="@+id/total_deaths"
+        android:layout_width="@dimen/port_width_column4"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textAlignment="center"
+        />
+    <TextView
+        android:id="@+id/new_deaths"
+        android:layout_width="@dimen/port_width_column5"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textAlignment="center"
+        />
+</LinearLayout>

@@ -1,6 +1,6 @@
 package com.example.student.covidstats
 
-class JsonResponse {
+class SummaryEndpointJSON {
     var Global:Global? = null
     var Countries:List<CountryData>? = null
     var Date:String? = null
@@ -29,16 +29,16 @@ class CountryData {
 }
 
 class CountryDetailsData {
-    var Country: String? = null
-    var CountryCode: String? = null
-    var Province: String? = null
-    var City: String? = null
-    var CityCode: String? = null
-    var Lat: String? = null
-    var Lon: String? = null
-    var Confirmed: Int? = null
-    var Deaths: Int? = null
-    var Recovered: Int? = null
-    var Active: Int? = null
-    var Date: String? = null
+    lateinit var Country: String
+    lateinit var CountryCode: String
+    lateinit var Province: String
+    lateinit var City: String
+    lateinit var CityCode: String
+    lateinit var Lat: String
+    lateinit var Lon: String
+    var Confirmed: Int = 0
+    var Deaths: Int = 0
+    var Recovered: Int = 0
+    var Active: Int = 0
+    lateinit var Date: String
 }

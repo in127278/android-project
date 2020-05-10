@@ -5,15 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-// Annotates class to be a Room Database with a table (entity) of the Word class
-@Database(entities = arrayOf(CountryEntity::class), version = 1, exportSchema = false)
+@Database(entities = [CountryEntity::class, CountryDetailEntity::class], version = 1, exportSchema = false)
 public abstract class CountryEntityRoomDatabase : RoomDatabase() {
 
     abstract fun countryEntityDao(): CountryEntityDao
 
     companion object {
-        // Singleton prevents multiple instances of database opening at the
-        // same time.
+        // Singleton prevents multiple instances of database opening at the same time.
         @Volatile
         private var INSTANCE: CountryEntityRoomDatabase? = null
 

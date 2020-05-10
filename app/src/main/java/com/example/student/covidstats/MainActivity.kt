@@ -2,12 +2,10 @@ package com.example.student.covidstats
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.student.covidstats.dummy.DummyContent
 
 class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectionListener {
     private var mDetailsFragment: DetailsFragment? = null
@@ -19,12 +17,12 @@ class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectio
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mFragmentManager = supportFragmentManager
+        countryViewModel = ViewModelProvider(this).get(CountryViewModel::class.java)
         if (savedInstanceState == null) {
             mFragmentManager.beginTransaction().run {
                 mCountryFragment = CountryFragment()
                 replace(R.id.countries_fragment_container, mCountryFragment)
                 commit()
-
             }
         }
     }
@@ -35,16 +33,15 @@ class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectio
         }
         mDetailsFragment?.let {
             if (!it.isAdded) {
-//                mDetailsFragment!!.arguments?.putString(mDetailsFragment!!.ARG_COUNTRY_NAME, item.content)
                 val args = Bundle()
-                args.putString(mDetailsFragment!!.ARG_COUNTRY_NAME, item.name)
+                args.putString(ARG_COUNTRY_NAME, item.name)
                 mDetailsFragment!!.arguments = args
                 val fragmentTransaction = mFragmentManager.beginTransaction()
                 fragmentTransaction.replace(R.id.countries_fragment_container, it)
                 fragmentTransaction.addToBackStack(null)
                 fragmentTransaction.commit()
                 mFragmentManager.executePendingTransactions()
-                BackgroundIntentService.startActionFetchDetails(applicationContext)
+                BackgroundIntentService.startActionFetchDetails(applicationContext, item.name)
             }
         }
     }

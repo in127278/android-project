@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">CovidStats</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="country">Country</string>
     <string name="total_cases">Total cases</string>
     <string name="new_cases">New cases</string>
     <string name="total_deaths">Total deaths</string>
     <string name="new_deaths">New deaths</string>
+    <string name="new_recovered_detail">New recovered:</string>
+    <string name="recovered_detail">Recovered:</string>
+    <string name="total_confirmed_detail">Total confirmed:</string>
+    <string name="new_cases_detail">New cases:</string>
+    <string name="total_deaths_detail">Total deaths:</string>
+    <string name="new_deaths_detail">New deaths:</string>
 </resources>

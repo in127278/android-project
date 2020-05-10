@@ -1,5 +1,6 @@
 package com.example.student.covidstats
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,75 +8,77 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.student.covidstats.dummy.DummyContent
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.fragment_details.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//private const val ARG_PARAM1 = "param1"
-//private const val ARG_PARAM2 = "param2"
-private const val ARG_COUNTRY_NAME = "position"
+const val ARG_COUNTRY_NAME = "name"
+
 /**
  * A simple [Fragment] subclass.
  * Use the [DetailsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
 class DetailsFragment : Fragment() {
-//    private const val ARG_COUNTRY_NAME = "position"
-    val ARG_COUNTRY_NAME = "country"
-    var mCurrentItem: String? = null
-    // TODO: Rename and change types of parameters
-//    private var param1: String? = null
-//    private var param2: String? = null
-//    private val ARG_COUNTRY_NAME: String? = "position"
-    private lateinit var mItem: DummyContent.DummyItem
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d("asd","CreateDetails")
-//        arguments?.let {
-//            mItem = ArrayAdapter(it, R.layout.details, 123)
-//        }
-    }
+    private lateinit var mSelectedCountry: String
+    private lateinit var countryViewModel: CountryViewModel
+    private lateinit var mGraphViewConfirmed: GraphView
+    private lateinit var mGraphViewActive: GraphView
+    private lateinit var mGraphViewDeaths: GraphView
+
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        Log.d("asd","CreateViewDetails")
-        if (savedInstanceState != null) {
-            mCurrentItem =
-                savedInstanceState.getString(ARG_COUNTRY_NAME)
-        }
-        return inflater.inflate(R.layout.fragment_details, container, false)
-    }
-    fun showItem(item: DummyContent.DummyItem) {
-        mItem = item
-        Log.d("asd","showItem")
-    }
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-    override fun onStart() {
-        super.onStart()
-        val args = arguments
-        if (args != null) { // Set article based on argument passed in
-            args.getString(ARG_COUNTRY_NAME)?.let { updateArticleView(it) }
-        } else if (mCurrentItem !== null) { // Set article based on saved instance state defined during onCreateView
-            updateArticleView(mCurrentItem!!)
+        if (savedInstanceState != null) {
+            mSelectedCountry = savedInstanceState.getString(ARG_COUNTRY_NAME)!!
         }
-    }
-    fun updateArticleView(position: String) {
-        val article = activity!!.findViewById(R.id.position) as TextView
-        article.text = position
-        mCurrentItem = position
+
+        if (arguments != null) {
+            mSelectedCountry = arguments!!.getString(ARG_COUNTRY_NAME)!!
+
+        }
+        val view = inflater.inflate(R.layout.fragment_details, container, false)
+        countryViewModel.setCountryName(mSelectedCountry)
+        countryViewModel.singleCountry.observe(viewLifecycleOwner, Observer { singleCountry ->
+            view.findViewById<TextView>(R.id.name).text = singleCountry?.name ?: ""
+            view.findViewById<TextView>(R.id.total_confirmed).text = singleCountry?.total_confirmed.toString()
+            view.findViewById<TextView>(R.id.new_confirmed).text = singleCountry?.new_confirmed.toString()
+            view.findViewById<TextView>(R.id.total_deaths).text = singleCountry?.total_deaths.toString()
+            view.findViewById<TextView>(R.id.new_deaths).text = singleCountry?.new_deaths.toString()
+            view.findViewById<TextView>(R.id.total_recovered).text = singleCountry?.total_recovered.toString()
+            view.findViewById<TextView>(R.id.new_recovered).text = singleCountry?.new_recovered.toString()
+        })
+
+        mGraphViewConfirmed= view.findViewById(R.id.graph1)
+        mGraphViewActive= view.findViewById(R.id.graph2)
+        mGraphViewDeaths= view.findViewById(R.id.graph3)
+
+        mGraphViewConfirmed.invalidate()
+        mGraphViewActive.invalidate()
+        mGraphViewDeaths.invalidate()
+
+        countryViewModel.countryDetail.observe(viewLifecycleOwner, Observer {details ->
+            mGraphViewConfirmed.setParameters(details, GRAPH_TYPE_CONFIRMED)
+            mGraphViewConfirmed.invalidate()
+            mGraphViewActive.setParameters(details, GRAPH_TYPE_ACTIVE)
+            mGraphViewActive.invalidate()
+            mGraphViewDeaths.setParameters(details, GRAPH_TYPE_DEATHS)
+            mGraphViewDeaths.invalidate()
+        })
+
+        return view
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Save the current article selection in case we need to recreate the fragment
-        outState.putString(
-            ARG_COUNTRY_NAME,
-            mCurrentItem
-        )
+        outState.putString(ARG_COUNTRY_NAME, mSelectedCountry)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        countryViewModel = activity?.let { ViewModelProvider(it).get(CountryViewModel::class.java) }!!
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

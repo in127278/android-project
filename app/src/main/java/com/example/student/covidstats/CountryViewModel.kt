@@ -3,22 +3,27 @@ package com.example.student.covidstats
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+
 
 class CountryViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: Repository
+    private val mRepository: Repository
     val allCountries: LiveData<List<CountryEntity>>
+    val singleCountry: LiveData<CountryEntity>
+    var countryDetail: LiveData<List<CountryDetailEntity>>
+    private val mCountryName = MutableLiveData<String>()
+    private val mCountryDao: CountryEntityDao = CountryEntityRoomDatabase.getDatabase(application).countryEntityDao()
 
     init {
-        val countryDao = CountryEntityRoomDatabase.getDatabase(application).countryEntityDao()
-        repository = Repository(countryDao)
-        allCountries = repository.allCountries
+        mRepository = Repository(mCountryDao)
+        allCountries = mRepository.getAllCountries()
+        singleCountry = Transformations.switchMap(mCountryName) { c -> mRepository.getSingleCountry(c)}
+        countryDetail = Transformations.switchMap(mCountryName) {c -> mRepository.getCountryDetails(c)}
     }
 
-    fun insert(country: CountryEntity) = viewModelScope.launch(Dispatchers.IO) {
-        repository.insert(country)
+    fun setCountryName(countryName: String) {
+        this.mCountryName.value = countryName
     }
 }

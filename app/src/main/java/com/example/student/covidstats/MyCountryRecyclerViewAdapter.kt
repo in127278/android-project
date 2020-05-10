@@ -8,16 +8,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.student.covidstats.CountryFragment.OnListFragmentSelectionListener
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_country.view.*
 
 /**
  * [RecyclerView.Adapter] that can display a [CountryEntity] and makes a call to the
  * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
  */
 class MyCountryRecyclerViewAdapter(
-//    private var countries: List<CountryEntity>,
-//    context: Context,
     private val mListener: OnListFragmentSelectionListener?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var countries= emptyList<CountryEntity>()
@@ -77,14 +75,16 @@ class MyCountryRecyclerViewAdapter(
         } else {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.fragment_country, parent, false)
+
             ViewHolderList(view)
+
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
        when(holder) {
            is ViewHolderList -> {
-               val item = countries[position]
+               val item = countries[position - 1]
                holder.mIdView.text = item.name
                holder.mTotalConfirmedView.text = item.total_confirmed.toString()
                holder.mNewConfirmedView.text = item.new_confirmed.toString()
@@ -121,15 +121,14 @@ class MyCountryRecyclerViewAdapter(
        }
 
     }
-//    internal fun setWords(countries: List<CountryEntity>) {
-//        this.countries = countries
-//        notifyDataSetChanged()
-//    }
+
     override fun getItemCount(): Int = countries.size
+
     fun setCountries(countries: List<CountryEntity>) {
         this.countries = countries
         notifyDataSetChanged()
     }
+
     inner class ViewHolderList(val mView: View) :
         RecyclerView.ViewHolder(mView) {
         val mIdView: TextView = mView.name
@@ -138,6 +137,7 @@ class MyCountryRecyclerViewAdapter(
         val mTotalDeathsView: TextView = mView.total_deaths
         val mNewDeathsView: TextView = mView.new_deaths
     }
+
     inner class ViewHolderHeader(val mView: View) :
         RecyclerView.ViewHolder(mView) {
         val mIdView: TextView = mView.name
@@ -153,18 +153,8 @@ class MyCountryRecyclerViewAdapter(
 
         return TYPE_ITEM;
     }
+
     private fun isPositionHeader(position: Int): Boolean {
         return position == 0
     }
-//    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-//        val mIdView: TextView = mView.name
-//        val mTotalConfirmedView: TextView = mView.total_confirmed
-//        val mNewConfirmedView: TextView = mView.new_confirmed
-//        val mTotalDeathsView: TextView = mView.total_deaths
-//        val mNewDeathsView: TextView = mView.new_deaths
-//
-////        override fun toString(): String {
-////            return super.toString() + " '" + mContentView.text + "'"
-////        }
-//    }
 }

@@ -3,20 +3,17 @@ package com.example.student.covidstats
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.HorizontalScrollView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
-import com.example.student.covidstats.dummy.DummyContent
-import com.example.student.covidstats.dummy.DummyContent.DummyItem
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.fragment_details.view.*
 
 /**
  * A fragment representing a list of Items.
@@ -25,7 +22,6 @@ import com.example.student.covidstats.dummy.DummyContent.DummyItem
  */
 class CountryFragment : Fragment() {
 
-    // TODO: Customize parameters
     private var columnCount = 1
     lateinit var adapter: MyCountryRecyclerViewAdapter
     private var listener: OnListFragmentSelectionListener? = null
@@ -33,7 +29,6 @@ class CountryFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        countryViewModel = ViewModelProvider(this).get(CountryViewModel::class.java)
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
@@ -47,17 +42,42 @@ class CountryFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_country_list, container, false)
         context?.let { BackgroundIntentService.startActionFetchAll(it) }
         val recycler = view.findViewById<RecyclerView>(R.id.list)
+        val floatingButton = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
+
         if (recycler is RecyclerView) {
             with(recycler) {
                 layoutManager = when {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-//                var db = CountryEntityRoomDatabase.getDatabase(context)
-//                items = db.countryEntityDao().getCountriesOrdered()
+                floatingButton.setOnClickListener{
+                    layoutManager!!.scrollToPosition(0)
+                }
+
+
+                recycler.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.computeVerticalScrollOffset() > 2000)
+                        {
+                            floatingButton.show();
+                        }
+                        super.onScrollStateChanged(recyclerView, newState)
+                    }
+
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+
+                        if (dy > 0 ||dy<0 && floatingButton.isShown)
+                        {
+                            floatingButton.hide();
+                        }
+                    }
+
+                })
+
                 adapter = MyCountryRecyclerViewAdapter(listener)
-                countryViewModel.allCountries.observe(viewLifecycleOwner, Observer { words ->
-                    words?.let {  (adapter as MyCountryRecyclerViewAdapter).setCountries(it) }
+
+                countryViewModel.allCountries.observe(viewLifecycleOwner, Observer { country ->
+                    country?.let {  (adapter as MyCountryRecyclerViewAdapter).setCountries(it) }
                 })
             }
         }
@@ -66,6 +86,7 @@ class CountryFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        countryViewModel = activity?.let { ViewModelProvider(it).get(CountryViewModel::class.java) }!!
         if (context is OnListFragmentSelectionListener) {
             listener = context
         } else {

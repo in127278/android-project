@@ -8,15 +8,20 @@ import androidx.room.*
 @Dao
 interface CountryEntityDao {
 
-    @Query("SELECT * from country ORDER BY total_confirmed DESC")
+    @Query("SELECT * FROM country ORDER BY total_confirmed DESC")
     fun getCountriesOrdered(): LiveData<List<CountryEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(word: CountryEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCountry(countries: List<CountryEntity>)
 
-    @Query("DELETE FROM country")
-    suspend fun deleteAll()
-    @Update
-    suspend fun updateCountry(country: CountryEntity)
+    @Query("SELECT * FROM country_detail WHERE name = :countryName ORDER BY id ASC")
+    fun getCountryDetail(countryName: String): LiveData<List<CountryDetailEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCountryDetail(details: Iterable<CountryDetailEntity>)
+
+    @Query("SELECT * FROM country WHERE name = :countryName LIMIT 1")
+    fun getSingleCountry(countryName: String): LiveData<CountryEntity>
+
 
 }

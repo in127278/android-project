@@ -1,7 +1,7 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.helpers
 
 class SummaryEndpointJSON {
-    var Global:Global? = null
+    var Global: Global? = null
     var Countries:List<CountryData>? = null
     var Date:String? = null
 }

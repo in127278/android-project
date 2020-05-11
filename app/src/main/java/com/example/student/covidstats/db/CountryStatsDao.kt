@@ -1,4 +1,4 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.db
 
 
 import androidx.lifecycle.LiveData
@@ -6,7 +6,7 @@ import androidx.room.*
 
 
 @Dao
-interface CountryEntityDao {
+interface CountryStatsDao {
 
     @Query("SELECT * FROM country ORDER BY total_confirmed DESC")
     fun getCountriesOrdered(): LiveData<List<CountryEntity>>

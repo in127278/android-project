@@ -1,4 +1,4 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.view
 
 
 import android.util.Log
@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.student.covidstats.CountryFragment.OnListFragmentSelectionListener
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.student.covidstats.R
+import com.example.student.covidstats.view.CountryFragment.OnListFragmentSelectionListener
+import com.example.student.covidstats.db.CountryEntity
 import kotlinx.android.synthetic.main.fragment_country.view.*
 
 /**
@@ -126,7 +127,6 @@ class MyCountryRecyclerViewAdapter(
 
     fun setCountries(countries: List<CountryEntity>) {
         this.countries = countries
-        Log.d("DEBUG", countries.size.toString())
         notifyDataSetChanged()
     }
 

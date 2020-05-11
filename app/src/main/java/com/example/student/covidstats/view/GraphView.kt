@@ -1,12 +1,12 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.view
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
+import com.example.student.covidstats.db.CountryDetailEntity
 
 
 var GRAPH_TYPE_ACTIVE = "ACTIVE"
@@ -56,7 +56,31 @@ class GraphView(context: Context, attr: AttributeSet): View(context, attr) {
                 previousValue = maxPlotHeight - scaledValue
             }
             drawText(firstDate, 0F, height.toFloat(), blackPaint)
-            drawText(lastDate, width.toFloat() - 140F, height.toFloat(), blackPaint)
+            drawText(lastDate, width.toFloat() - 260F, height.toFloat(), blackPaint)
+
+
+            var stopX: Float
+            var stopY: Float
+            val height = canvas.height - 350F
+
+            val gridSize = 20
+            val gridSpacing = (width/gridSize).toFloat()
+            val boardSize = gridSize * gridSpacing
+
+            val xOffset = ((width - boardSize) / 2)
+            val yOffset = (height - boardSize) / 2
+
+            for (i in 0 until gridSize) {
+                stopX = xOffset + i * gridSpacing
+                stopY = yOffset + boardSize
+                canvas.drawLine(stopX, yOffset, stopX, stopY, black)
+            }
+
+            for (i in 0 until gridSize) {
+                stopX = xOffset + boardSize
+                stopY = yOffset + i * gridSpacing
+                canvas.drawLine(xOffset, stopY, stopX, stopY, black)
+            }
         }
     }
 
@@ -73,6 +97,12 @@ class GraphView(context: Context, attr: AttributeSet): View(context, attr) {
     private val greenPaint = Paint(0).apply {
         color = Color.rgb(0, 255, 0);
         strokeWidth = 8F;
+
+    }
+
+    private val black = Paint(0).apply {
+        color = Color.rgb(0, 0, 0);
+        strokeWidth = 1F;
 
     }
 

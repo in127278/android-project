@@ -1,11 +1,12 @@
 package com.example.student.covidstats
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.example.student.covidstats.db.*
+import com.example.student.covidstats.view.*
 
 
 class CountryViewModel(application: Application) : AndroidViewModel(application) {
@@ -17,7 +18,7 @@ class CountryViewModel(application: Application) : AndroidViewModel(application)
     var lastUpdate: LiveData<LastCheckEntity>
     private val mCountryName = MutableLiveData<String>()
     private val mFilterBy = MutableLiveData<String>()
-    private val mCountryDao: CountryEntityDao = CountryEntityRoomDatabase.getDatabase(application).countryEntityDao()
+    private val mCountryDao: CountryStatsDao = CountryStatsRoomDatabase.getDatabase(application).countryEntityDao()
 
     init {
         mRepository = Repository(mCountryDao)
@@ -27,7 +28,7 @@ class CountryViewModel(application: Application) : AndroidViewModel(application)
             PARAM_ASIA -> {mRepository.getCountriesFiltered(c)}
             PARAM_EUROPE -> {mRepository.getCountriesFiltered(c)}
             PARAM_OCEANIA -> {mRepository.getCountriesFiltered(c)}
-            PARAM_NORTH_AMERICA-> {mRepository.getCountriesFiltered(c)}
+            PARAM_NORTH_AMERICA -> {mRepository.getCountriesFiltered(c)}
             PARAM_SOUTH_AMERICA -> {mRepository.getCountriesFiltered(c)}
             else -> {mRepository.getAllCountries()}
         }}

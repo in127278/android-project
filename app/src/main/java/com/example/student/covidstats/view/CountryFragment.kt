@@ -1,8 +1,7 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.view
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.student.covidstats.BackgroundIntentService
+import com.example.student.covidstats.CountryViewModel
+import com.example.student.covidstats.R
+import com.example.student.covidstats.db.CountryEntity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.android.synthetic.main.fragment_details.view.*
 
 const val ARG_COUNTRIES_FILTER = "ALL_COUNTRIES_DISPLAY_TYPE"
 const val PARAM_AFRICA = "Africa"
@@ -40,6 +42,7 @@ class CountryFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
+            listFilter = it.getString(ARG_COUNTRIES_FILTER).toString()
         }
     }
 
@@ -51,12 +54,16 @@ class CountryFragment : Fragment() {
             listFilter = savedInstanceState.getString(ARG_COUNTRIES_FILTER)!!
         }
 
-        if (arguments != null) {
-            listFilter = arguments!!.getString(ARG_COUNTRIES_FILTER)!!
-        }
+//        if (arguments != null) {
+//            listFilter = arguments!!.getString(ARG_COUNTRIES_FILTER)!!
+//        }
 
         val view = inflater.inflate(R.layout.fragment_country_list, container, false)
-        context?.let { BackgroundIntentService.startActionFetchAll(it) }
+        context?.let {
+            BackgroundIntentService.startActionFetchAll(
+                it
+            )
+        }
         val recycler = view.findViewById<RecyclerView>(R.id.list)
         val floatingButton = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
 
@@ -85,9 +92,11 @@ class CountryFragment : Fragment() {
                         }
                     }
                 })
-                adapter = MyCountryRecyclerViewAdapter(listener)
+                adapter =
+                    MyCountryRecyclerViewAdapter(
+                        listener
+                    )
                 countryViewModel.setFilterBy(listFilter)
-                Log.d("DEBUG", listFilter)
                 countryViewModel.allCountries.observe(viewLifecycleOwner, Observer { country ->
                     country?.let { (adapter as MyCountryRecyclerViewAdapter).setCountries(it) }
                 })

@@ -2,6 +2,12 @@ package com.example.student.covidstats
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.student.covidstats.db.CountryDetailEntity
+import com.example.student.covidstats.db.CountryEntity
+import com.example.student.covidstats.db.CountryStatsDao
+import com.example.student.covidstats.db.LastCheckEntity
+import com.example.student.covidstats.helpers.CountryDetailsData
+import com.example.student.covidstats.helpers.SummaryEndpointJSON
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.IOException
@@ -14,7 +20,7 @@ import java.util.*
 import javax.net.ssl.HttpsURLConnection
 
 
-class Repository(private val countryEntityDao: CountryEntityDao) {
+class Repository(private val countryStatsDao: CountryStatsDao) {
 
     private val apiUrlBase: String = "https://api.covid19api.com/"
     private val userAgent: String =  "Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0"
@@ -23,54 +29,64 @@ class Repository(private val countryEntityDao: CountryEntityDao) {
 //    val allCountries: LiveData<List<CountryEntity>> = countryEntityDao.getCountriesOrdered()
 
     fun getAllCountries(): LiveData<List<CountryEntity>> {
-        return countryEntityDao.getCountriesOrdered()
+        return countryStatsDao.getCountriesOrdered()
     }
 
     fun getAll(): Int {
-        return countryEntityDao.getAll()
+        return countryStatsDao.getAll()
     }
     fun getCountriesFiltered(continent: String): LiveData<List<CountryEntity>> {
-        return countryEntityDao.getCountriesFiltered(continent)
+        return countryStatsDao.getCountriesFiltered(continent)
     }
 
     fun getSingleCountry(countryName: String): LiveData<CountryEntity> {
-       return countryEntityDao.getSingleCountry(countryName)
+       return countryStatsDao.getSingleCountry(countryName)
     }
 
     fun getCountryDetails(countryName: String): LiveData<List<CountryDetailEntity>> {
-        return countryEntityDao.getCountryDetail(countryName)
+        return countryStatsDao.getCountryDetail(countryName)
     }
 
     fun insertCountry(countries: List<CountryEntity>) {
-        countryEntityDao.insertCountry(countries)
+        countryStatsDao.insertCountry(countries)
     }
 
     fun insertCountryDetail(detail: List<CountryDetailEntity>) {
-        countryEntityDao.insertCountryDetail(detail)
+        countryStatsDao.insertCountryDetail(detail)
     }
 
     fun getLastCheck(key: String): LastCheckEntity {
-        return countryEntityDao.getLastCheck(key)
+        return countryStatsDao.getLastCheck(key)
     }
 
     fun getLastUpdate(key: String): LiveData<LastCheckEntity> {
-        return countryEntityDao.getLastUpdate(key)
+        return countryStatsDao.getLastUpdate(key)
     }
         fun insertLastCheck(lastCheckEntity: LastCheckEntity) {
-        countryEntityDao.insertLastCheck(lastCheckEntity)
+        countryStatsDao.insertLastCheck(lastCheckEntity)
     }
 
     private fun checkRecent(countryName: String): Boolean {
         val lastCheck = getLastCheck(countryName)
         if (lastCheck == null) {
             val formattedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
-            this.insertLastCheck(LastCheckEntity(countryName, formattedDate))
+            this.insertLastCheck(
+                LastCheckEntity(
+                    countryName,
+                    formattedDate
+                )
+            )
         } else {
             var readDate = SimpleDateFormat("yyyy-MM-dd HH:mm").parse(lastCheck.date)
             val minutes: Long = (Date().time - readDate.time) / 60000
 //            Log.d("DEBUG", "Diff: " + minutes)
             if(minutes < 30) { return true}
-            this.insertLastCheck(LastCheckEntity(countryName, SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())))
+            this.insertLastCheck(
+                LastCheckEntity(
+                    countryName,
+                    SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                )
+            )
         }
         return false
     }
@@ -82,6 +98,7 @@ class Repository(private val countryEntityDao: CountryEntityDao) {
         val apiEndpoint = "dayone/country/$countryName"
         val myConnection: HttpsURLConnection = URL(apiUrlBase+apiEndpoint).openConnection() as HttpsURLConnection
         myConnection.setRequestProperty("User-Agent", userAgent);
+        myConnection.connectTimeout = 6000
         if (myConnection.responseCode == 200) {
             try{
                 val responseBody: InputStream = myConnection.inputStream
@@ -89,15 +106,20 @@ class Repository(private val countryEntityDao: CountryEntityDao) {
                 var gson = Gson()
                 val founderListType: Type = object : TypeToken<ArrayList<CountryDetailsData?>?>() {}.type
                 val json: List<CountryDetailsData> = gson.fromJson(responseBodyReader, founderListType)
-                var result = json.mapIndexed { index, daily -> CountryDetailEntity(
-                    daily.Country,
-                    index,
-                    daily.Confirmed,
-                    daily.Deaths,
-                    daily.Recovered,
-                    daily.Active,
-                    daily.Date.substring(8,10) + "-"+ daily.Date.substring(5,7)
-                ) }
+                var result = json.mapIndexed { index, daily ->
+                    CountryDetailEntity(
+                        daily.Country,
+                        index,
+                        daily.Confirmed,
+                        daily.Deaths,
+                        daily.Recovered,
+                        daily.Active,
+                        daily.Date.substring(8, 10) + "-" + daily.Date.substring(
+                            5,
+                            7
+                        ) + "-" + daily.Date.substring(0, 4)
+                    )
+                }
                 responseBodyReader.close()
                 responseBody.close()
                 if(result.size < 180) {
@@ -122,6 +144,7 @@ class Repository(private val countryEntityDao: CountryEntityDao) {
         val apiEndpoint = "summary"
         val myConnection: HttpsURLConnection = URL(apiUrlBase+apiEndpoint).openConnection() as HttpsURLConnection
         myConnection.setRequestProperty("User-Agent", userAgent);
+        myConnection.connectTimeout = 6000
         if (myConnection.responseCode == 200) {
             try{
                 val responseBody: InputStream = myConnection.inputStream

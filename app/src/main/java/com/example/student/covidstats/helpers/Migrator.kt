@@ -1,4 +1,4 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.helpers
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase

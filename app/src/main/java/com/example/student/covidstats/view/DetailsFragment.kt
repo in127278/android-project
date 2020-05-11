@@ -1,9 +1,7 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.view
 
 import android.content.Context
-import android.opengl.Visibility
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +9,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.fragment_details.*
-import org.w3c.dom.Text
+import com.example.student.covidstats.CountryViewModel
+import com.example.student.covidstats.R
 
 const val ARG_COUNTRY_NAME = "name"
 
@@ -23,6 +21,7 @@ const val ARG_COUNTRY_NAME = "name"
  */
 class DetailsFragment : Fragment() {
     private lateinit var mSelectedCountry: String
+//    private var listFilter: String? = null
     private lateinit var countryViewModel: CountryViewModel
     private lateinit var mGraphViewConfirmed: GraphView
     private lateinit var mGraphViewActive: GraphView
@@ -35,10 +34,12 @@ class DetailsFragment : Fragment() {
 
         if (savedInstanceState != null) {
             mSelectedCountry = savedInstanceState.getString(ARG_COUNTRY_NAME)!!
+//            listFilter = savedInstanceState.getString(ARG_COUNTRIES_FILTER)
         }
 
         if (arguments != null) {
             mSelectedCountry = arguments!!.getString(ARG_COUNTRY_NAME)!!
+//            listFilter = arguments!!.getString(ARG_COUNTRIES_FILTER)
 
         }
         val view = inflater.inflate(R.layout.fragment_details, container, false)
@@ -90,11 +91,17 @@ class DetailsFragment : Fragment() {
                 label2.visibility = View.GONE
                 label3.visibility = View.GONE
             }
-            mGraphViewConfirmed.setParameters(details, GRAPH_TYPE_CONFIRMED)
+            mGraphViewConfirmed.setParameters(details,
+                GRAPH_TYPE_CONFIRMED
+            )
             mGraphViewConfirmed.invalidate()
-            mGraphViewActive.setParameters(details, GRAPH_TYPE_ACTIVE)
+            mGraphViewActive.setParameters(details,
+                GRAPH_TYPE_ACTIVE
+            )
             mGraphViewActive.invalidate()
-            mGraphViewDeaths.setParameters(details, GRAPH_TYPE_DEATHS)
+            mGraphViewDeaths.setParameters(details,
+                GRAPH_TYPE_DEATHS
+            )
             mGraphViewDeaths.invalidate()
         })
 
@@ -104,6 +111,7 @@ class DetailsFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(ARG_COUNTRY_NAME, mSelectedCountry)
+//        outState.putString(ARG_COUNTRIES_FILTER, listFilter)
     }
 
     override fun onAttach(context: Context) {

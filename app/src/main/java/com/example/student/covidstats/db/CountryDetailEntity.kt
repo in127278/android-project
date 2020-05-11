@@ -1,4 +1,4 @@
-package com.example.student.covidstats
+package com.example.student.covidstats.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

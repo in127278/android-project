@@ -1,7 +1,6 @@
 package com.example.student.covidstats
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +8,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.student.covidstats.db.CountryEntity
+import com.example.student.covidstats.view.*
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectionListener,
@@ -44,7 +44,8 @@ class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectio
         countryViewModel = ViewModelProvider(this).get(CountryViewModel::class.java)
         if (savedInstanceState == null) {
             mFragmentManager.beginTransaction().run {
-                mCountryFragment = CountryFragment()
+                mCountryFragment =
+                    CountryFragment()
                 val args = Bundle()
                 args.putString(ARG_COUNTRIES_FILTER, "ALL")
                 mCountryFragment.arguments = args
@@ -65,7 +66,8 @@ class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectio
 
     override fun onListFragmentSelection(item: CountryEntity) {
         if (mDetailsFragment === null) {
-            mDetailsFragment = DetailsFragment()
+            mDetailsFragment =
+                DetailsFragment()
         }
         mDetailsFragment?.let {
             if (!it.isAdded) {
@@ -117,7 +119,8 @@ class MainActivity : AppCompatActivity(), CountryFragment.OnListFragmentSelectio
     fun manageFragment(parameter: String) {
         mFragmentManager.beginTransaction().run {
             mFragmentManager.popBackStack()
-            mCountryFragment = CountryFragment()
+            mCountryFragment =
+                CountryFragment()
             val args = Bundle()
             args.putString(ARG_COUNTRIES_FILTER, parameter)
             mCountryFragment!!.arguments = args

@@ -13,7 +13,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-
+import com.example.student.covidstats.db.CountryStatsRoomDatabase
 
 
 private const val ACTION_FETCH_ALL = "com.example.student.covidstats.action.FETCH_ALL"
@@ -31,7 +31,7 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
 
     override fun onCreate() {
         super.onCreate()
-        mRepository = Repository(CountryEntityRoomDatabase.getDatabase(application).countryEntityDao())
+        mRepository = Repository(CountryStatsRoomDatabase.getDatabase(application).countryEntityDao())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -65,7 +65,6 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
             Log.d("DEBUG", "NO CONNECTION")
             return
         }
-        Log.d("DEBUG", "WOLOLO " + mRepository.getAll().toString())
         when (intent?.action) {
             ACTION_FETCH_ALL -> {
                 handleActionFetchAll()

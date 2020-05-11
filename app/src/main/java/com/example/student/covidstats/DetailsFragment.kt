@@ -1,6 +1,7 @@
 package com.example.student.covidstats
 
 import android.content.Context
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.fragment_details.*
+import org.w3c.dom.Text
 
 const val ARG_COUNTRY_NAME = "name"
 
@@ -28,7 +30,8 @@ class DetailsFragment : Fragment() {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
 
         if (savedInstanceState != null) {
             mSelectedCountry = savedInstanceState.getString(ARG_COUNTRY_NAME)!!
@@ -42,23 +45,51 @@ class DetailsFragment : Fragment() {
         countryViewModel.setCountryName(mSelectedCountry)
         countryViewModel.singleCountry.observe(viewLifecycleOwner, Observer { singleCountry ->
             view.findViewById<TextView>(R.id.name).text = singleCountry?.name ?: ""
-            view.findViewById<TextView>(R.id.total_confirmed).text = singleCountry?.total_confirmed.toString()
-            view.findViewById<TextView>(R.id.new_confirmed).text = singleCountry?.new_confirmed.toString()
-            view.findViewById<TextView>(R.id.total_deaths).text = singleCountry?.total_deaths.toString()
+            view.findViewById<TextView>(R.id.total_confirmed).text =
+                singleCountry?.total_confirmed.toString()
+            view.findViewById<TextView>(R.id.new_confirmed).text =
+                singleCountry?.new_confirmed.toString()
+            view.findViewById<TextView>(R.id.total_deaths).text =
+                singleCountry?.total_deaths.toString()
             view.findViewById<TextView>(R.id.new_deaths).text = singleCountry?.new_deaths.toString()
-            view.findViewById<TextView>(R.id.total_recovered).text = singleCountry?.total_recovered.toString()
-            view.findViewById<TextView>(R.id.new_recovered).text = singleCountry?.new_recovered.toString()
+            view.findViewById<TextView>(R.id.total_recovered).text =
+                singleCountry?.total_recovered.toString()
+            view.findViewById<TextView>(R.id.new_recovered).text =
+                singleCountry?.new_recovered.toString()
         })
 
-        mGraphViewConfirmed= view.findViewById(R.id.graph1)
-        mGraphViewActive= view.findViewById(R.id.graph2)
-        mGraphViewDeaths= view.findViewById(R.id.graph3)
-
+        mGraphViewConfirmed = view.findViewById(R.id.graph1)
+        mGraphViewActive = view.findViewById(R.id.graph2)
+        mGraphViewDeaths = view.findViewById(R.id.graph3)
+        var label1 = view.findViewById<TextView>(R.id.graph1_label)
+        var label2 = view.findViewById<TextView>(R.id.graph2_label)
+        var label3 = view.findViewById<TextView>(R.id.graph3_label)
+        var lastUpdate = view.findViewById<TextView>(R.id.last_updated)
         mGraphViewConfirmed.invalidate()
         mGraphViewActive.invalidate()
         mGraphViewDeaths.invalidate()
+        countryViewModel.lastUpdate.observe(viewLifecycleOwner, Observer { date ->
+            if(date != null) {
+                lastUpdate.text = "Last updated:\n" + date.date
+            }
 
-        countryViewModel.countryDetail.observe(viewLifecycleOwner, Observer {details ->
+        })
+        countryViewModel.countryDetail.observe(viewLifecycleOwner, Observer { details ->
+            if (details.isNotEmpty()) {
+                mGraphViewConfirmed.visibility = View.VISIBLE
+                mGraphViewActive.visibility = View.VISIBLE
+                mGraphViewDeaths.visibility = View.VISIBLE
+                label1.visibility = View.VISIBLE
+                label2.visibility = View.VISIBLE
+                label3.visibility = View.VISIBLE
+            } else {
+                mGraphViewConfirmed.visibility = View.GONE
+                mGraphViewActive.visibility = View.GONE
+                mGraphViewDeaths.visibility = View.GONE
+                label1.visibility = View.GONE
+                label2.visibility = View.GONE
+                label3.visibility = View.GONE
+            }
             mGraphViewConfirmed.setParameters(details, GRAPH_TYPE_CONFIRMED)
             mGraphViewConfirmed.invalidate()
             mGraphViewActive.setParameters(details, GRAPH_TYPE_ACTIVE)
@@ -77,8 +108,10 @@ class DetailsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        countryViewModel = activity?.let { ViewModelProvider(it).get(CountryViewModel::class.java) }!!
+        countryViewModel =
+            activity?.let { ViewModelProvider(it).get(CountryViewModel::class.java) }!!
     }
+
     companion object {
         /**
          * Use this factory method to create a new instance of

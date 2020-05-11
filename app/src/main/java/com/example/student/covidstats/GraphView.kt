@@ -62,17 +62,17 @@ class GraphView(context: Context, attr: AttributeSet): View(context, attr) {
 
     private val bluePaint = Paint(0).apply {
         color = Color.rgb(0, 0, 255);
-        strokeWidth = 10F;
+        strokeWidth = 8F;
     }
 
     private val redPaint = Paint(0).apply {
         color = Color.rgb(255, 0, 0);
-        strokeWidth = 10F;
+        strokeWidth = 8F;
     }
 
     private val greenPaint = Paint(0).apply {
         color = Color.rgb(0, 255, 0);
-        strokeWidth = 10F;
+        strokeWidth = 8F;
 
     }
 

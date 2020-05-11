@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    >
+<group android:checkableBehavior="single">
+    <item android:title="World" android:icon="@drawable/ic_world" android:id="@+id/all"/>
+    <item android:title="Africa" android:icon="@drawable/ic_africa" android:id="@+id/africa"/>
+    <item android:title="Asia" android:icon="@drawable/ic_asia" android:id="@+id/asia"/>
+    <item android:title="Australia" android:icon="@drawable/ic_australia" android:id="@+id/australia"/>
+    <item android:title="Europe" android:icon="@drawable/ic_europe" android:id="@+id/europe"/>
+    <item android:title="North America" android:icon="@drawable/ic_namericas" android:id="@+id/america"/>
+    <item android:title="South America" android:icon="@drawable/ic_samerica" android:id="@+id/samerica"/>
+</group>
+</menu>

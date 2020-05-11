@@ -11,4 +11,8 @@
     <string name="new_cases_detail">New cases:</string>
     <string name="total_deaths_detail">Total deaths:</string>
     <string name="new_deaths_detail">New deaths:</string>
+    <string name="active_cases">Active cases</string>
+    <string name="total_confirmed">Total confirmed</string>
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
 </resources>

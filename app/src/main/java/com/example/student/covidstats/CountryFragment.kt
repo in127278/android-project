@@ -15,6 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_details.view.*
 
+const val ARG_COUNTRIES_FILTER = "ALL_COUNTRIES_DISPLAY_TYPE"
+const val PARAM_AFRICA = "Africa"
+const val PARAM_ASIA = "Asia"
+const val PARAM_EUROPE = "Europe"
+const val PARAM_NORTH_AMERICA = "North America"
+const val PARAM_OCEANIA = "Oceania"
+const val PARAM_SOUTH_AMERICA = "South America"
+
 /**
  * A fragment representing a list of Items.
  * Activities containing this fragment MUST implement the
@@ -25,6 +33,7 @@ class CountryFragment : Fragment() {
     private var columnCount = 1
     lateinit var adapter: MyCountryRecyclerViewAdapter
     private var listener: OnListFragmentSelectionListener? = null
+    lateinit var listFilter: String
     private lateinit var countryViewModel: CountryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +47,13 @@ class CountryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        if (savedInstanceState != null) {
+            listFilter = savedInstanceState.getString(ARG_COUNTRIES_FILTER)!!
+        }
+
+        if (arguments != null) {
+            listFilter = arguments!!.getString(ARG_COUNTRIES_FILTER)!!
+        }
 
         val view = inflater.inflate(R.layout.fragment_country_list, container, false)
         context?.let { BackgroundIntentService.startActionFetchAll(it) }
@@ -50,34 +66,30 @@ class CountryFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                floatingButton.setOnClickListener{
+                floatingButton.setOnClickListener {
                     layoutManager!!.scrollToPosition(0)
                 }
 
 
-                recycler.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+                recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                        if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.computeVerticalScrollOffset() > 2000)
-                        {
+                        if (newState == RecyclerView.SCROLL_STATE_IDLE && recyclerView.computeVerticalScrollOffset() > 2000) {
                             floatingButton.show();
                         }
                         super.onScrollStateChanged(recyclerView, newState)
                     }
 
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-
-                        if (dy > 0 ||dy<0 && floatingButton.isShown)
-                        {
+                        if (dy > 0 || dy < 0 && floatingButton.isShown) {
                             floatingButton.hide();
                         }
                     }
-
                 })
-
                 adapter = MyCountryRecyclerViewAdapter(listener)
-
+                countryViewModel.setFilterBy(listFilter)
+                Log.d("DEBUG", listFilter)
                 countryViewModel.allCountries.observe(viewLifecycleOwner, Observer { country ->
-                    country?.let {  (adapter as MyCountryRecyclerViewAdapter).setCountries(it) }
+                    country?.let { (adapter as MyCountryRecyclerViewAdapter).setCountries(it) }
                 })
             }
         }
@@ -86,7 +98,8 @@ class CountryFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        countryViewModel = activity?.let { ViewModelProvider(it).get(CountryViewModel::class.java) }!!
+        countryViewModel =
+            activity?.let { ViewModelProvider(it).get(CountryViewModel::class.java) }!!
         if (context is OnListFragmentSelectionListener) {
             listener = context
         } else {
@@ -97,6 +110,11 @@ class CountryFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ARG_COUNTRIES_FILTER, listFilter)
     }
 
     /**

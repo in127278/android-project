@@ -117,7 +117,7 @@ class MyCountryRecyclerViewAdapter(
                    setOnClickListener(mOnClickSortTotalListener)
                }
            }
-           else -> Log.d("asd","ViewHolder not found");
+           else -> Log.d("DEBUG","ViewHolder not found");
        }
 
     }
@@ -126,6 +126,7 @@ class MyCountryRecyclerViewAdapter(
 
     fun setCountries(countries: List<CountryEntity>) {
         this.countries = countries
+        Log.d("DEBUG", countries.size.toString())
         notifyDataSetChanged()
     }
 

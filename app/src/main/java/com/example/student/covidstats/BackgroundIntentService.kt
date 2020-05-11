@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.ConnectivityManager
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -60,16 +61,20 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
         return super.onStartCommand(intent, flags, startId)
     }
     override fun onHandleIntent(intent: Intent?) {
-                Log.d("asd", "Create request for API :D")
-                when (intent?.action) {
-                    ACTION_FETCH_ALL -> {
-                        handleActionFetchAll()
-                    }
-                    ACTION_FETCH_DETAILS -> {
-                val countryName = intent.getStringExtra(EXTRA_COUNTRY_NAME)
-                        handleActionFetchDetails(countryName)
-                    }
-                }
+        if(!isNetworkAvailable()) {
+            Log.d("DEBUG", "NO CONNECTION")
+            return
+        }
+        Log.d("DEBUG", "WOLOLO " + mRepository.getAll().toString())
+        when (intent?.action) {
+            ACTION_FETCH_ALL -> {
+                handleActionFetchAll()
+            }
+            ACTION_FETCH_DETAILS -> {
+        val countryName = intent.getStringExtra(EXTRA_COUNTRY_NAME)
+                handleActionFetchDetails(countryName)
+            }
+        }
 
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -89,9 +94,7 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
      * parameters.
      */
     private fun handleActionFetchAll(param1: String="default", param2: String="default") {
-        Log.d("asd","executing service fetchALL")
         try {
-            Log.d("asd","BEFORE")
             mRepository.apiFetchAll()
         } catch (ex: InterruptedException) {
             Thread.currentThread().interrupt()
@@ -109,6 +112,12 @@ class BackgroundIntentService : IntentService("BackgroundIntentService") {
         } catch (ex: InterruptedException) {
             Thread.currentThread().interrupt()
         }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager =  getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+        val activeNetworkInfo = connectivityManager!!.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
     companion object {
